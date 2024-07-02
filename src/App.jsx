@@ -3,28 +3,35 @@ import "./App.css";
 import MyNav from "./components/MyNav";
 import fantasy from "./data/fantasy.json";
 import BookList from "./components/BookList";
-import { Component } from "react";
+import { useState } from "react";
 
-class App extends Component {
-  state = {
+const App = () => {
+  /* state = {
     isSelected: false,
     asin: null,
     comments: []
+  }; */
+
+  const [asin, setAsin] = useState("");
+
+  const [comments, setComments] = useState([]);
+
+  const [isSelected, setIsSelected] = useState(false);
+
+  const [selectedAsin, setSelectedAsin] = useState("");
+
+  const handleClick = asin => {
+    setAsin(asin);
+    setSelectedAsin(asin);
+    setIsSelected(true);
   };
 
-  handleClick = asin => {
-    this.setState({ isSelected: true });
-    this.setState({ asin: asin });
-  };
-
-  render() {
-    return (
-      <div className="App">
-        <MyNav />
-        <BookList genre={fantasy} handleClick={this.handleClick} comments={this.state.comments} asin={this.state.asin} isSelected={this.state.isSelected} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className="App">
+      <MyNav />
+      <BookList genre={fantasy} handleClick={handleClick} comments={comments} asin={asin} setComments={setComments} isSelected={isSelected} selectedAsin={selectedAsin} setSelectedAsin={setSelectedAsin} />
+    </div>
+  );
+};
 
 export default App;

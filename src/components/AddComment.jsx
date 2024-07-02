@@ -1,20 +1,26 @@
-import { Component } from "react";
+import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 
 const URL = "https://striveschool-api.herokuapp.com/api/comments/";
 const auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjZiZjk5NzdjMjM5YzAwMTUyZjRiM2MiLCJpYXQiOjE3MTk0OTA4MjksImV4cCI6MTcyMDcwMDQyOX0.DKsZ6NE4RC2q5DGQhtPu6bhYlYLaj2pWT9Zbpm7r2Ws";
 
-class AddComment extends Component {
-  state = {
+const AddComment = props => {
+  /* state = {
     comment: "",
     rate: "5",
     elementId: this.props.asin
-  };
+  }; */
 
-  fetchPostComment = () => {
+  const [review, setReview] = useState({
+    comment: "",
+    rate: 5,
+    elementId: props.asin
+  });
+
+  const fetchPostComment = () => {
     fetch(URL, {
       method: "POST",
-      body: JSON.stringify(this.state),
+      body: JSON.stringify(review),
       headers: {
         Authorization: auth,
         "Content-type": "application/json"
@@ -23,8 +29,12 @@ class AddComment extends Component {
       .then(response => {
         if (response.ok) {
           alert("Comment successfully posted");
-          this.props.fetchComments(this.props.asin);
-          this.setState({ comment: "", rate: "5" });
+          props.fetchComments(props.asin);
+          setReview({
+            comment: "",
+            rate: 5,
+            elementId: props.asin
+          });
         } else {
           throw new Error("Comment not posted");
         }
@@ -32,27 +42,27 @@ class AddComment extends Component {
       .catch(error => console.log(error));
   };
 
-  handleFieldChange = (key, value) => this.setState({ [key]: value });
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    this.fetchPostComment();
+    fetchPostComment();
   };
 
-  render() {
-    return (
-      <Form className="mt-5" onSubmit={this.handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Rate</Form.Label>
-          <Form.Control value={this.state.comment} className="my-3" type="text" placeholder="Your comment" onChange={event => this.handleFieldChange("comment", event.target.value)} required />
-          <Form.Control value={this.state.rate} className="my-3" type="number" placeholder="Your rating" min={1} max={5} onChange={event => this.handleFieldChange("rate", event.target.value)} required />
-          <Button type="sumbit" variant="info">
-            Send
-          </Button>
-        </Form.Group>
-      </Form>
-    );
-  }
-}
+  const handleFieldChange = (key, value) => {
+    setReview({ ...review, [key]: value });
+  };
+
+  return (
+    <Form className="mt-5" onSubmit={handleSubmit}>
+      <Form.Group className="mb-3">
+        <Form.Label>Rate</Form.Label>
+        <Form.Control value={review.comment} className="my-3" type="text" placeholder="Your comment" onChange={event => handleFieldChange("comment", event.target.value)} required />
+        <Form.Control value={review.rate} className="my-3" type="number" placeholder="Your rating" min={1} max={5} onChange={event => handleFieldChange("rate", event.target.value)} required />
+        <Button type="sumbit" variant="info">
+          Send
+        </Button>
+      </Form.Group>
+    </Form>
+  );
+};
 
 export default AddComment;
